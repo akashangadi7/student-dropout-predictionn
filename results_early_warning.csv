@@ -1,0 +1,7 @@
+Phase,Model,Features,Accuracy,Macro_F1,Dropout_recall,Enrolled_F1
+A: Enrollment only,Random Forest,22,0.619,0.5683,0.6402,0.3496
+A: Enrollment only,XGBoost,22,0.6536,0.5645,0.6262,0.3
+B: + 1st semester,Random Forest,28,0.756,0.6986,0.7664,0.4653
+B: + 1st semester,XGBoost,28,0.7741,0.6915,0.8084,0.4145
+C: + 2nd semester (all),Random Forest,34,0.8042,0.7577,0.7757,0.5692
+C: + 2nd semester (all),XGBoost,34,0.7982,0.7381,0.7757,0.5278
