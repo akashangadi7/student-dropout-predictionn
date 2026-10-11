@@ -3,20 +3,36 @@ Streamlit demo: Student Dropout & Academic Success predictor
 Run:  streamlit run app.py
 Needs: models/best_model.joblib (made by train_models.py) and data/dataset.csv
 """
+import os
 import joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
 
 st.set_page_config(page_title="Student Dropout Predictor", page_icon="🎓", layout="wide")
 
 
 # ------------------------------------------------------------ load model + data
-@st.cache_resource
+@st.cache_resource(show_spinner="Training the model for the first time. This takes about a minute...")
 def load_model():
-    bundle = joblib.load("models/best_model.joblib")
-    return bundle["model"], bundle["classes"], bundle["columns"]
+    # Normal case: use the model saved by train_models.py
+    if os.path.exists("models/best_model.joblib"):
+        bundle = joblib.load("models/best_model.joblib")
+        return bundle["model"], bundle["classes"], bundle["columns"]
+    # Web case: the saved model is too large for GitHub, so train one here
+    # with the same settings and split as train_models.py
+    df = pd.read_csv("data/dataset.csv")
+    le = LabelEncoder()
+    y = le.fit_transform(df["Target"])
+    X = df.drop(columns="Target")
+    X_train, _, y_train, _ = train_test_split(X, y, test_size=0.30, stratify=y, random_state=42)
+    rf = RandomForestClassifier(n_estimators=300, class_weight="balanced",
+                                random_state=42, n_jobs=-1).fit(X_train, y_train)
+    return rf, list(le.classes_), list(X.columns)
 
 
 @st.cache_data
